@@ -19,6 +19,9 @@
             --vermelho-errado: #f44336;
             --cinza-claro: #f9f9f9;
             --sombra: rgba(0, 0, 0, 0.1);
+            /* Novas cores para fundo de justificativas */
+            --verde-justificativa-fundo: rgba(76, 175, 80, 0.1);
+            --vermelho-justificativa-fundo: rgba(244, 67, 54, 0.1);
         }
 
         /* Animação de fundo de gradiente */
@@ -62,6 +65,7 @@
             flex-direction: column;
             align-items: center;
             padding: 20px; /* Espaçamento que antes estava no body */
+            padding-bottom: 80px; /* Adiciona espaço para a barra de navegação inferior */
         }
 
         header {
@@ -243,7 +247,7 @@
         }
 
         .panel {
-            padding: 0 18px; /* Mantido padding */
+            padding: 10px 0px; /* Ajustado padding para 0 nas laterais, itens internos terão */
             background-color: var(--branco);
             max-height: 0;
             overflow: hidden;
@@ -254,8 +258,38 @@
             border-top: none;
         }
 
-        .panel p {
-            margin: 15px 0; /* Aumentado margin */
+        .justificativa-item { /* Estilo para cada item da justificativa */
+            padding: 10px 15px;
+            margin: 8px 18px; /* Margem lateral igual ao padding original do painel */
+            border-radius: 4px;
+            line-height: 1.5;
+        }
+
+        .justificativa-item strong { /* Letra da alternativa */
+            margin-right: 8px;
+        }
+
+        .justificativa-item.certa {
+            background-color: var(--verde-justificativa-fundo);
+            border-left: 5px solid var(--verde-certo);
+            color: #2e7d32; /* Tom de verde mais escuro para o texto */
+        }
+        .justificativa-item.certa strong{
+            color: var(--verde-certo);
+        }
+
+        .justificativa-item.errada {
+            background-color: var(--vermelho-justificativa-fundo);
+            border-left: 5px solid var(--vermelho-errado);
+            color: #c62828; /* Tom de vermelho mais escuro para o texto */
+        }
+        .justificativa-item.errada strong{
+            color: var(--vermelho-errado);
+        }
+
+        /* Remove margin do p antigo se ele ainda existir ou for recriado sem a classe .justificativa-item */
+        .panel > p:not(.justificativa-item) {
+            margin: 15px 18px;
         }
 
         footer {
@@ -276,6 +310,72 @@
             height: 24px;
             margin-right: 10px;
             stroke: var(--azul-escuro); /* Cor do stroke do SVG */
+        }
+
+        /* Barra de navegação inferior para questões */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--azul-escuro);
+            padding: 12px 10px; /* Aumentado padding vertical */
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: center; /* Centraliza os botões se não houver scroll */
+            align-items: center;
+            gap: 8px; /* Espaço entre os botões */
+            overflow-x: auto; /* Permite scroll horizontal se muitos botões */
+            z-index: 1000;
+            -webkit-overflow-scrolling: touch; /* Melhora scroll em iOS */
+        }
+
+        .bottom-nav button {
+            background-color: var(--azul-claro);
+            color: var(--branco);
+            border: 1px solid var(--azul-escuro);
+            border-radius: 50%;
+            width: 38px; /* Tamanho aumentado */
+            height: 38px;
+            font-size: 0.85em; /* Tamanho da fonte ajustado */
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
+            flex-shrink: 0; /* Impede que os botões encolham */
+        }
+
+        .bottom-nav button:hover {
+            background-color: var(--azul-vibrante);
+            transform: translateY(-2px); /* Leve elevação no hover */
+        }
+
+        .bottom-nav button.atual {
+            background-color: var(--azul-vibrante);
+            transform: scale(1.15); /* Destaque maior */
+            border: 2px solid var(--branco); /* Borda mais destacada */
+            box-shadow: 0 0 5px rgba(255,255,255,0.5);
+        }
+
+        .bottom-nav button.certo {
+            background-color: var(--verde-certo);
+            border-color: var(--verde-certo);
+            color: var(--branco);
+        }
+        .bottom-nav button.certo:hover {
+             background-color: #3e8e41; /* Verde um pouco mais escuro no hover */
+        }
+
+
+        .bottom-nav button.errado {
+            background-color: var(--vermelho-errado);
+            border-color: var(--vermelho-errado);
+            color: var(--branco);
+        }
+        .bottom-nav button.errado:hover {
+            background-color: #c4302b; /* Vermelho um pouco mais escuro no hover */
         }
 
     </style>
@@ -328,6 +428,9 @@
         <span>Encontre mais quizzes e aprenda!</span>
         <button id="limpar-progresso-btn" style="margin-left: 20px; padding: 8px 12px; border: 1px solid var(--azul-escuro); background-color: var(--branco); color: var(--azul-escuro); border-radius: 5px; cursor: pointer;">Limpar Progresso</button>
     </footer>
+    <div class="bottom-nav">
+        <!-- Botões das questões serão inseridos aqui pelo JS -->
+    </div>
 
     <script>
         const containerQuiz = document.getElementById('quiz-container');
@@ -355,19 +458,34 @@
                 pergunta: "Qual é a cor do céu em um dia ensolarado, devido principalmente ao fenômeno de dispersão de Rayleigh?",
                 opcoes: ["Azul", "Branco", "Amarelo", "Verde"],
                 correta: 0,
-                justificativa: "A cor do céu é azul devido à dispersão de Rayleigh da luz solar pelas moléculas do ar. Essa dispersão afeta mais fortemente os comprimentos de onda mais curtos (azul e violeta)."
+                justificativas: [ // Array de strings
+                    "A dispersão de Rayleigh espalha a luz azul (comprimento de onda menor) mais eficientemente do que outras cores.",
+                    "Embora a luz solar seja branca, a atmosfera dispersa seletivamente suas cores.",
+                    "O céu pode parecer amarelado/alaranjado durante o nascer/pôr do sol devido à maior travessia da luz pela atmosfera, mas não em pleno dia.",
+                    "O verde não é a cor predominante da dispersão da luz solar no céu diurno."
+                ]
             },
             {
                 pergunta: "Qual planeta é conhecido como o 'Planeta Vermelho'?",
                 opcoes: ["Júpiter", "Marte", "Vênus", "Saturno"],
                 correta: 1,
-                justificativa: "Marte é conhecido como o Planeta Vermelho devido à presença de óxido de ferro em sua superfície."
+                justificativas: [
+                    "Júpiter é um gigante gasoso com faixas de nuvens em tons de marrom, amarelo e branco.",
+                    "Marte é chamado de Planeta Vermelho devido à grande quantidade de óxido de ferro (ferrugem) em sua superfície.",
+                    "Vênus é coberto por nuvens densas de ácido sulfúrico, dando-lhe uma aparência amarelada.",
+                    "Saturno é conhecido por seus anéis e tem uma cor predominantemente amarelada pálida."
+                ]
             },
             {
                 pergunta: "Qual é o maior oceano da Terra?",
                 opcoes: ["Atlântico", "Índico", "Ártico", "Pacífico"],
                 correta: 3,
-                justificativa: "O Oceano Pacífico é o maior e mais profundo oceano da Terra, cobrindo mais de um terço da superfície do planeta."
+                justificativas: [
+                    "O Oceano Atlântico é o segundo maior oceano.",
+                    "O Oceano Índico é o terceiro maior.",
+                    "O Oceano Ártico é o menor e mais raso dos oceanos principais.",
+                    "O Oceano Pacífico é o maior, cobrindo mais área do que todas as massas de terra combinadas."
+                ]
             }
         ];
 
@@ -439,7 +557,8 @@
                 containerPontuacaoFinal.style.display = 'none';
                 containerNavegacao.style.display = 'flex';
                 renderizarQuestao(indiceAtual);
-                renderizarNavInferior();
+                renderizarNavInferior(); // Para botões Próxima/Anterior
+                renderizarBarraNavegacaoQuestoes(); // Para a nova barra de questões
                 alert('Progresso limpo e quiz reiniciado!');
             }
         }
@@ -459,7 +578,17 @@
             containerOpcoes.innerHTML = '';
             elementoFeedback.textContent = '';
             elementoFeedback.className = '';
-            painelAccordion.querySelector('p').textContent = questaoAtual.justificativa;
+
+            // Limpa justificativas anteriores e prepara o container
+            let containerJustificativas = painelAccordion.querySelector('.justificativa-content');
+            if (!containerJustificativas) {
+                painelAccordion.innerHTML = ''; // Limpa o <p> antigo se existir
+                containerJustificativas = document.createElement('div');
+                containerJustificativas.className = 'justificativa-content';
+                painelAccordion.appendChild(containerJustificativas);
+            }
+            containerJustificativas.innerHTML = ''; // Limpa para novos itens
+
             painelAccordion.style.maxHeight = null;
             btnAccordion.classList.remove('active');
             btnAccordion.style.display = 'none'; // Esconde por padrão
@@ -499,6 +628,25 @@
                 btnAccordion.style.display = 'block'; // Mostra botão de justificativa
                 elementoFeedback.textContent = statusQuestoes[indice] ? "Correto!" : "Errado!";
                 elementoFeedback.classList.add(statusQuestoes[indice] ? "correto" : "errado");
+
+                // Preenche as justificativas
+                const containerJustificativasInterno = painelAccordion.querySelector('.justificativa-content');
+                questaoAtual.opcoes.forEach((opcaoTexto, i) => {
+                    const letraOpcao = String.fromCharCode(65 + i); // A, B, C, D...
+                    const textoJustificativa = questaoAtual.justificativas[i] || "Justificativa não disponível.";
+
+                    const pJustificativa = document.createElement('p');
+                    pJustificativa.classList.add('justificativa-item');
+                    pJustificativa.innerHTML = `<strong>${letraOpcao}:</strong> ${textoJustificativa}`;
+
+                    if (i === questaoAtual.correta) {
+                        pJustificativa.classList.add('certa');
+                    } else {
+                        pJustificativa.classList.add('errada');
+                    }
+                    containerJustificativasInterno.appendChild(pJustificativa);
+                });
+
             }
 
             btnPularQuestao.style.display = respondida ? 'none' : 'block';
@@ -515,6 +663,7 @@
 
             renderizarQuestao(indiceAtual); // Re-renderiza para mostrar feedback e desabilitar
             renderizarNavInferior();
+            renderizarBarraNavegacaoQuestoes(); // Atualiza status na barra
             salvarProgresso(); // Salva o progresso
 
             // Verifica se todas as questões foram respondidas
@@ -529,6 +678,7 @@
                 indiceAtual++;
                 renderizarQuestao(indiceAtual);
                 renderizarNavInferior();
+                renderizarBarraNavegacaoQuestoes();
                 salvarProgresso(); // Salva ao pular também
             } else if (statusQuestoes.every(s => s !== null)) {
                  mostrarTelaDesempenho();
@@ -589,6 +739,7 @@
                 indiceAtual++;
                 renderizarQuestao(indiceAtual);
                 renderizarNavInferior();
+                renderizarBarraNavegacaoQuestoes();
                 salvarProgresso(); // Salva ao navegar
             }
         }
@@ -598,9 +749,40 @@
                 indiceAtual--;
                 renderizarQuestao(indiceAtual);
                 renderizarNavInferior();
+                renderizarBarraNavegacaoQuestoes();
                 salvarProgresso(); // Salva ao navegar
             }
         }
+
+        function renderizarBarraNavegacaoQuestoes() {
+            const navContainer = document.querySelector('.bottom-nav');
+            navContainer.innerHTML = ''; // Limpa botões antigos
+
+            questoes.forEach((_, i) => {
+                const btnQuestao = document.createElement('button');
+                btnQuestao.textContent = `${i + 1}`;
+                // btnQuestao.title = `Ir para Questão ${i + 1}`; // Tooltip
+
+                if (i === indiceAtual) {
+                    btnQuestao.classList.add('atual');
+                }
+                if (statusQuestoes[i] === true) {
+                    btnQuestao.classList.add('certo');
+                } else if (statusQuestoes[i] === false) {
+                    btnQuestao.classList.add('errado');
+                }
+
+                btnQuestao.addEventListener('click', () => {
+                    indiceAtual = i;
+                    renderizarQuestao(indiceAtual);
+                    renderizarNavInferior(); // Atualiza botões Próxima/Anterior
+                    renderizarBarraNavegacaoQuestoes(); // Atualiza a própria barra
+                    salvarProgresso();
+                });
+                navContainer.appendChild(btnQuestao);
+            });
+        }
+
 
         // Event Listeners
         document.addEventListener('DOMContentLoaded', () => {
@@ -609,6 +791,7 @@
                 renderizarQuestao(indiceAtual);
                 renderizarNavInferior();
             }
+            renderizarBarraNavegacaoQuestoes(); // Renderiza a barra de questões
         });
 
         btnAnterior.addEventListener('click', navegarAnterior);
