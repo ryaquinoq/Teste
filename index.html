@@ -10,7 +10,7 @@
         body {
             font-family: 'Inter', sans-serif;
             overflow: hidden;
-            background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+            background: linear-gradient(135deg, #4e2053 0%, #973aa8 100%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -29,7 +29,7 @@
             perspective: 1000px; /* Para efeito 3D na porta */
         }
         .vault-container {
-            background-color: rgba(255, 255, 255, 0.95);
+            background-color: rgba(240, 230, 248, 0.92); /* Very light lavender tint */
             padding: 2rem 1.5rem;
             border-radius: 1rem;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
@@ -49,10 +49,10 @@
             position: relative;
         }
 
-        .vault-body { fill: #8a8a8a; /* Cinza ardósia */ }
+        .vault-body { /* fill: #5a5a5a; */ /* Fill now applied directly in SVG via gradient */ }
         .vault-door {
-            fill: #b0b0b0; /* Cinza mais claro */
-            stroke: #606060; /* Cinza escuro para contorno */
+            fill: #707070; 
+            stroke: #404040; 
             stroke-width: 2;
             transform-origin: left center; /* Ponto de rotação da porta */
             transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
@@ -60,11 +60,11 @@
         .vault-door.open {
             transform: rotateY(-110deg) translateX(-5px) scaleX(1.05); /* Efeito de abertura da porta */
         }
-        .dial-plate { fill: #f5f5f5; /* Cinza bem claro */ }
-        .dial-center { fill: #dcdcdc; /* Cinza médio */ }
-        .handle-base { fill: #dcdcdc; }
+        .dial-plate { /* fill: #b0b0b0; */ /* Fill now applied directly in SVG via gradient */ }
+        .dial-center { /* fill: #888888; */ /* Fill now applied directly in SVG via gradient */ }
+        .handle-base { /* fill: #888888; */ /* Fill now applied directly in SVG via gradient */ }
         .handle-grip {
-             fill: #8a8a8a;
+             /* fill: #5a5a5a; */ /* Fill now applied directly in SVG via gradient */
              /* transition: transform 0.3s ease-in-out; */ /* Replaced by keyframe animation */
         }
         .vault-container.opening .handle-grip {
@@ -72,17 +72,19 @@
             animation: handleTurnAndClick 0.5s ease-out forwards;
             transform-origin: 100px 105px; /* Ensure this is the correct center for the handle grip */
         }
-        .hinge { fill: #606060; }
+        .hinge { fill: #404040; }
 
 
         .romantic-title {
             font-family: 'Pacifico', cursive;
-            color: #a30052;
+            color: #ffe5b4; /* Pale Gold/Navajo White */
             font-size: 1.75rem;
             margin-bottom: 1.5rem;
         }
         input[type="password"] {
-            border: 2px solid #ff8fab;
+            border: 2px solid #bca0dc; /* Muted Lavender */
+            color: #333; /* Ensure text inside is readable */
+            background-color: #fdfaff; /* Very light off-white */
             border-radius: 0.5rem;
             padding: 0.75rem;
             width: 100%;
@@ -93,12 +95,12 @@
         }
         input[type="password"]:focus {
             outline: none;
-            border-color: #ff69b4;
-            box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.4);
+            border-color: #9e70c9; /* Brighter Lavender */
+            box-shadow: 0 0 0 3px rgba(158, 112, 201, 0.4); /* Shadow from focus border */
         }
         .btn-open {
-            background-color: #ff69b4;
-            color: white;
+            background-color: #ad6fbf; /* Harmonious purple */
+            color: #ffffff;
             padding: 0.75rem 1.5rem;
             border-radius: 0.5rem;
             font-weight: 600;
@@ -108,7 +110,7 @@
             font-size: 1rem;
         }
         .btn-open:hover {
-            background-color: #e0529d;
+            background-color: #c388d9; /* Lighter purple for hover */
             transform: translateY(-2px);
         }
         .btn-open:active {
@@ -141,7 +143,7 @@
             position: absolute;
             bottom: -60px;
             font-size: 1.2rem; /* Tamanho base */
-            color: #ff1493;
+            color: #ffabcf; /* Light, vibrant pink for new background */
             /* animation: floatUp 4s linear forwards; */ /* Replaced by JS applied animation */
             user-select: none;
             pointer-events: none;
@@ -191,7 +193,7 @@
         }
 
         .error-message {
-            color: #e53e3e;
+            color: #ff8080; /* Lighter red for dark backgrounds */
             font-size: 0.875rem;
             margin-top: 0.5rem;
             height: 1.25rem;
@@ -257,9 +259,9 @@
 
         /* Keyframes for message pulsing/glowing effect */
         @keyframes pulseGlow {
-            0% { text-shadow: 2px 2px 8px rgba(0,0,0,0.5), 0 0 10px rgba(255, 182, 193, 0.5); } /* LightPink base glow */
-            50% { text-shadow: 2px 2px 12px rgba(0,0,0,0.6), 0 0 25px rgba(255, 182, 193, 1); } /* Brighter LightPink glow */
-            100% { text-shadow: 2px 2px 8px rgba(0,0,0,0.5), 0 0 10px rgba(255, 182, 193, 0.5); }
+            0% { text-shadow: 2px 2px 8px rgba(0,0,0,0.6), 0 0 10px rgba(230, 190, 255, 0.5); } /* Soft Lavender glow */
+            50% { text-shadow: 2px 2px 12px rgba(0,0,0,0.7), 0 0 25px rgba(230, 190, 255, 0.9); } /* Brighter Lavender glow */
+            100% { text-shadow: 2px 2px 8px rgba(0,0,0,0.6), 0 0 10px rgba(230, 190, 255, 0.5); }
         }
 
         .love-message.message-pulsing {
@@ -305,15 +307,58 @@
         <div class="vault-wrapper">
             <div id="vaultContainer" class="vault-container">
                 <div class="vault-svg-container">
-                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="20" y="20" width="160" height="160" rx="10" class="vault-body"/>
+                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+                        <defs>
+                            <linearGradient id="vaultFrontGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#787878;" />
+                                <stop offset="100%" style="stop-color:#484848;" />
+                            </linearGradient>
+                            <linearGradient id="vaultTopGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#888888;" />
+                                <stop offset="100%" style="stop-color:#686868;" />
+                            </linearGradient>
+                            <linearGradient id="vaultSideGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#505050;" />
+                                <stop offset="100%" style="stop-color:#303030;" />
+                            </linearGradient>
+                            <radialGradient id="dialPlateRadialGradient" cx="50%" cy="50%" r="65%" fx="35%" fy="35%">
+                                <stop offset="0%" style="stop-color:#d0d0d0;" />  <!-- Lighter center highlight -->
+                                <stop offset="60%" style="stop-color:#b0b0b0;" /> <!-- Main color -->
+                                <stop offset="100%" style="stop-color:#909090;" /> <!-- Darker edge -->
+                            </radialGradient>
+                            <radialGradient id="dialCenterGradient" cx="50%" cy="50%" r="70%" fx="30%" fy="30%">
+                                <stop offset="0%" style="stop-color:#aaaaaa;" />  <!-- Highlight for center -->
+                                <stop offset="100%" style="stop-color:#707070;" /> <!-- Darker edge for center -->
+                            </radialGradient>
+                            <linearGradient id="handleBaseGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#989898;" /> <!-- Lighter edge for handle base -->
+                                <stop offset="50%" style="stop-color:#808080;" />
+                                <stop offset="100%" style="stop-color:#707070;" /> <!-- Darker edge for handle base -->
+                            </linearGradient>
+                            <linearGradient id="handleGripGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#707070;" /> <!-- Lighter top for handle grip -->
+                                <stop offset="50%" style="stop-color:#5a5a5a;" /> <!-- Original color -->
+                                <stop offset="100%" style="stop-color:#484848;" /> <!-- Darker bottom for handle grip -->
+                            </linearGradient>
+                        </defs>
+
+                        {/* Side Facet Path (right side) */}
+                        <path d="M180,20 L190,10 L190,170 L180,180 Z" fill="url(#vaultSideGradient)" stroke="#303030" stroke-width="0.5"/>
+                        
+                        {/* Top Facet Path */}
+                        <path d="M20,20 L10,10 L170,10 L180,20 Z" fill="url(#vaultTopGradient)" stroke="#404040" stroke-width="0.5"/>
+
+                        {/* Existing vault body - now the FRONT face, with gradient */}
+                        <rect x="20" y="20" width="160" height="160" rx="10" class="vault-body" fill="url(#vaultFrontGradient)"/>
+                        
                         <rect id="vaultDoorSvg" x="25" y="25" width="150" height="150" rx="5" class="vault-door"/>
                         <rect x="18" y="40" width="10" height="20" rx="2" class="hinge"/>
                         <rect x="18" y="140" width="10" height="20" rx="2" class="hinge"/>
-                        <circle cx="100" cy="100" r="35" class="dial-plate"/>
-                        <circle cx="100" cy="100" r="15" class="dial-center"/>
-                        <line id="vaultDialMarker" x1="100" y1="70" x2="100" y2="80" stroke="#606060" stroke-width="3"/>
-                        <rect x="95" y="90" width="10" height="30" rx="2" class="handle-base" transform="translate(50, 15)"/> <rect id="handleGripSvg" x="85" y="115" width="30" height="10" rx="3" class="handle-grip" transform="translate(50, 15)"/> </svg>
+                        <circle cx="100" cy="100" r="35" class="dial-plate" fill="url(#dialPlateRadialGradient)"/>
+                        <circle cx="100" cy="100" r="15" class="dial-center" fill="url(#dialCenterGradient)"/>
+                        <line id="vaultDialMarker" x1="100" y1="70" x2="100" y2="80" stroke="#333333" stroke-width="3"/>
+                        <rect x="95" y="90" width="10" height="30" rx="2" class="handle-base" transform="translate(50, 15)" fill="url(#handleBaseGradient)"/> 
+                        <rect id="handleGripSvg" x="85" y="115" width="30" height="10" rx="3" class="handle-grip" transform="translate(50, 15)" fill="url(#handleGripGradient)"/> </svg>
                 </div>
                 <h1 class="romantic-title">Um Segredo Para Você</h1>
                 <input type="password" id="passwordInput" placeholder="Digite a senha especial">
@@ -339,7 +384,7 @@
         const vaultSvgContainer = document.querySelector('.vault-svg-container'); // For dial animation
         const correctPassword = "280921";
 
-        const confettiColors = ['#ffd700', '#c0c0c0', '#ff69b4', '#87ceeb', '#9370db', '#f4a460'];
+        const confettiColors = ['#ffd700', '#c0c0c0', '#f8b4ff', '#a9def9', '#eccaff', '#ffb3ba'];
 
         function createConfettiParticle() {
             const particle = document.createElement('div');
