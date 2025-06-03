@@ -3,812 +3,464 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Interativo</title>
+    <title>Um Presente Especial Para Você</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-
-        :root {
-            --cor-primaria: #f0f0f0;
-            --cor-secundaria: #ccc;
-            --cor-texto: #333;
-            --branco: #fff; /* Adicionada variável para branco */
-            --azul-escuro: #003366;
-            --azul-claro: #6699cc;
-            --azul-vibrante: #007bff; /* Novo tom de azul vibrante */
-            --verde-certo: #4CAF50;
-            --vermelho-errado: #f44336;
-            --cinza-claro: #f9f9f9;
-            --sombra: rgba(0, 0, 0, 0.1);
-            /* Novas cores para fundo de justificativas */
-            --verde-justificativa-fundo: rgba(76, 175, 80, 0.1);
-            --vermelho-justificativa-fundo: rgba(244, 67, 54, 0.1);
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            position: relative;
         }
-
-        /* Animação de fundo de gradiente */
-        .animated-gradient-background {
-            background: linear-gradient(-45deg, var(--azul-claro), var(--azul-escuro), #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            position: fixed;
-            top: 0;
-            left: 0;
+        .app-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             width: 100%;
             height: 100%;
-            z-index: -1;
-            opacity: 0.08; /* Opacidade sutil */
         }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        .vault-wrapper {
+            perspective: 1000px; /* Para efeito 3D na porta */
         }
-
-        body {
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            padding: 0; /* Alterado para 0, o espaçamento será por seções */
-            /* background-color: var(--cor-primaria); Removido para o gradiente brilhar */
-            color: var(--cor-texto);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh; /* Para o footer ficar no final */
-            position: relative; /* Para o z-index do gradiente funcionar corretamente */
-            z-index: 1;
-        }
-
-        .site-content { /* Novo wrapper para empurrar footer */
-            flex: 1;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px; /* Espaçamento que antes estava no body */
-            padding-bottom: 80px; /* Adiciona espaço para a barra de navegação inferior */
-        }
-
-        header {
-            /* Gradiente sutil para o header */
-            background-image: linear-gradient(to bottom, var(--azul-claro), var(--azul-escuro));
-            color: var(--branco);
-            padding: 1.5em 20px; /* Aumentado padding */
+        .vault-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 2rem 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
             text-align: center;
+            width: 90%;
+            max-width: 380px; /* Levemente menor para acomodar melhor o SVG */
+            transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.7s ease-out;
+            position: relative; /* Para z-index se necessário */
+            z-index: 10;
+        }
+
+        /* Estilo para o SVG do Cofre */
+        .vault-svg-container {
+            width: 150px; /* Ajuste conforme necessário */
+            height: 150px;
+            margin: 0 auto 1.5rem auto;
+            position: relative;
+        }
+
+        .vault-body { fill: #8a8a8a; /* Cinza ardósia */ }
+        .vault-door {
+            fill: #b0b0b0; /* Cinza mais claro */
+            stroke: #606060; /* Cinza escuro para contorno */
+            stroke-width: 2;
+            transform-origin: left center; /* Ponto de rotação da porta */
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        .vault-door.open {
+            transform: rotateY(-110deg) translateX(-5px) scaleX(1.05); /* Efeito de abertura da porta */
+        }
+        .dial-plate { fill: #f5f5f5; /* Cinza bem claro */ }
+        .dial-center { fill: #dcdcdc; /* Cinza médio */ }
+        .handle-base { fill: #dcdcdc; }
+        .handle-grip {
+             fill: #8a8a8a;
+             /* transition: transform 0.3s ease-in-out; */ /* Replaced by keyframe animation */
+        }
+        .vault-container.opening .handle-grip {
+            /* transform: rotate(90deg); */ /* Replaced by keyframe animation */
+            animation: handleTurnAndClick 0.5s ease-out forwards;
+            transform-origin: 100px 105px; /* Ensure this is the correct center for the handle grip */
+        }
+        .hinge { fill: #606060; }
+
+
+        .romantic-title {
+            font-family: 'Pacifico', cursive;
+            color: #a30052;
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+        input[type="password"] {
+            border: 2px solid #ff8fab;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
             width: 100%;
-            max-width: 800px; /* Um pouco mais largo */
-            margin-bottom: 30px; /* Aumentado margin */
-            border-radius: 8px;
-            display: flex; /* Para alinhar ícone e título */
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 6px var(--sombra);
-        }
-
-        .header-icon {
-            width: 32px; /* Tamanho do ícone */
-            height: 32px;
-            margin-right: 15px; /* Espaço entre ícone e título */
-            stroke: var(--branco); /* Cor do stroke do SVG */
-        }
-
-        header h1 {
-            margin: 0; /* Remove margin padrão do h1 */
-            font-size: 1.8em; /* Ajuste de tamanho */
-        }
-
-        main {
-            background-color: var(--branco);
-            padding: 25px; /* Aumentado padding */
-            border-radius: 8px;
-            box-shadow: 0 4px 15px var(--sombra); /* Sombra mais pronunciada */
-            width: 100%;
-            max-width: 600px; /* Mantido */
-        }
-
-        #quiz-container {
-            margin-bottom: 25px; /* Aumentado margin */
-        }
-
-        .pergunta {
-            font-size: 1.3em; /* Levemente maior */
-            margin-bottom: 15px; /* Aumentado margin */
-            line-height: 1.4;
-        }
-
-        .opcoes { /* Adicionado para espaçamento dos botões */
-            margin-bottom: 20px;
-        }
-
-        .opcoes button {
-            display: block;
-            width: 100%;
-            padding: 12px; /* Aumentado padding */
-            margin-bottom: 12px; /* Aumentado margin */
-            /* Gradiente sutil para os botões de opção */
-            background-image: linear-gradient(to right, var(--azul-claro), var(--azul-escuro));
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            font-family: 'Montserrat', sans-serif; /* Garante que os botões também usem a fonte */
-            transition: background-image 0.3s ease, background-color 0.3s ease, transform 0.2s ease-in-out;
-        }
-
-        .opcoes button:hover:not(:disabled),
-        .question-actions button:hover:not(:disabled),
-        .navigation-buttons button:hover:not(:disabled) { /* Aplicando hover a todos os botões principais */
-            background-image: none; /* Remove o gradiente no hover */
-            background-color: var(--azul-vibrante); /* Azul vibrante no hover */
-            color: var(--branco); /* Garante que o texto seja legível */
-            transform: scale(1.05); /* Microinteração de escala */
-        }
-
-        button:disabled {
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        #feedback {
-            margin-top: 20px; /* Aumentado margin */
-            margin-bottom: 15px; /* Adicionado margin inferior */
-            font-weight: bold;
-            font-size: 1.05em;
-        }
-
-        .correto {
-            color: var(--verde-certo);
-        }
-
-        .errado {
-            color: var(--vermelho-errado);
-        }
-
-        .question-actions, .navigation-buttons { /* Container para botões de ação/navegação */
-            display: flex;
-            justify-content: space-between; /* Ou center, flex-end */
-            margin-top: 25px; /* Aumentado margin */
-            gap: 10px; /* Espaço entre botões */
-        }
-
-        .question-actions button, .navigation-buttons button {
-            padding: 10px 15px; /* Padding ajustado */
-            /* Gradiente sutil para os botões */
-            background-image: linear-gradient(to right, var(--azul-claro), var(--azul-escuro));
-            color: var(--branco);
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.95em; /* Levemente menor para diferenciar dos botões de opção */
-            font-family: 'Montserrat', sans-serif;
-            transition: background-image 0.3s ease, background-color 0.3s ease, transform 0.2s ease-in-out;
-            flex-grow: 1; /* Para que os botões ocupem espaço disponível */
-        }
-
-        .navigation-buttons button.secondary-action { /* Estilo para botões como "Anterior" */
-            background-image: none;
-            background-color: var(--cinza-claro);
-            color: var(--azul-escuro);
-            border: 1px solid var(--cor-secundaria);
-        }
-        .navigation-buttons button.secondary-action:hover:not(:disabled) {
-            background-color: var(--cor-secundaria);
-            color: var(--azul-escuro);
-            transform: scale(1.05);
-        }
-
-
-        #pontuacao-final { /* Removido #reiniciar-container do grupo */
+            margin-bottom: 1rem;
             text-align: center;
-            margin-top: 20px;
+            font-size: 1.125rem;
+            box-sizing: border-box;
         }
-
-        /* Estilos para Card e animação de entrada */
-        .card {
-            background-color: var(--branco); /* Para garantir que o conteúdo do card não seja transparente sobre o gradiente */
-            padding: 25px; /* Aumentado padding */
-            border-radius: 8px;
-            margin-bottom: 30px; /* Aumentado margin */
-            box-shadow: 0 2px 8px var(--sombra); /* Sombra ajustada */
-            animation: fadeInSlideUp 0.5s ease-out forwards;
-        }
-
-        @keyframes fadeInSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Estilos para Acordeão */
-        .accordion {
-            background-color: var(--azul-claro);
-            color: var(--branco);
-            cursor: pointer;
-            padding: 12px; /* Mantido padding */
-            width: 100%;
-            border: none;
-            text-align: left;
+        input[type="password"]:focus {
             outline: none;
-            font-size: 1em;
-            font-family: 'Montserrat', sans-serif;
-            border-radius: 5px;
-            margin-top: 15px; /* Aumentado margin */
-            transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+            border-color: #ff69b4;
+            box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.4);
         }
-
-        .accordion:hover {
-            background-color: var(--azul-vibrante);
-            transform: scale(1.02);
-        }
-
-        .panel {
-            padding: 10px 0px; /* Ajustado padding para 0 nas laterais, itens internos terão */
-            background-color: var(--branco);
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-in-out; /* Transição suavizada */
-            border-bottom-left-radius: 5px;
-            border-bottom-right-radius: 5px;
-            border: 1px solid var(--cor-secundaria);
-            border-top: none;
-        }
-
-        .justificativa-item { /* Estilo para cada item da justificativa */
-            padding: 10px 15px;
-            margin: 8px 18px; /* Margem lateral igual ao padding original do painel */
-            border-radius: 4px;
-            line-height: 1.5;
-        }
-
-        .justificativa-item strong { /* Letra da alternativa */
-            margin-right: 8px;
-        }
-
-        .justificativa-item.certa {
-            background-color: var(--verde-justificativa-fundo);
-            border-left: 5px solid var(--verde-certo);
-            color: #2e7d32; /* Tom de verde mais escuro para o texto */
-        }
-        .justificativa-item.certa strong{
-            color: var(--verde-certo);
-        }
-
-        .justificativa-item.errada {
-            background-color: var(--vermelho-justificativa-fundo);
-            border-left: 5px solid var(--vermelho-errado);
-            color: #c62828; /* Tom de vermelho mais escuro para o texto */
-        }
-        .justificativa-item.errada strong{
-            color: var(--vermelho-errado);
-        }
-
-        /* Remove margin do p antigo se ele ainda existir ou for recriado sem a classe .justificativa-item */
-        .panel > p:not(.justificativa-item) {
-            margin: 15px 18px;
-        }
-
-        footer {
-            width: 100%;
-            padding: 20px;
-            text-align: center;
-            color: var(--azul-escuro);
-            background-color: rgba(255, 255, 255, 0.7); /* Fundo semi-transparente para destacar do gradiente */
-            box-shadow: 0 -2px 5px var(--sombra);
-            margin-top: auto; /* Empurra para o final */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .footer-icon {
-            width: 24px;
-            height: 24px;
-            margin-right: 10px;
-            stroke: var(--azul-escuro); /* Cor do stroke do SVG */
-        }
-
-        /* Barra de navegação inferior para questões */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: var(--azul-escuro);
-            padding: 12px 10px; /* Aumentado padding vertical */
-            box-shadow: 0 -2px 8px rgba(0,0,0,0.2);
-            display: flex;
-            justify-content: center; /* Centraliza os botões se não houver scroll */
-            align-items: center;
-            gap: 8px; /* Espaço entre os botões */
-            overflow-x: auto; /* Permite scroll horizontal se muitos botões */
-            z-index: 1000;
-            -webkit-overflow-scrolling: touch; /* Melhora scroll em iOS */
-        }
-
-        .bottom-nav button {
-            background-color: var(--azul-claro);
-            color: var(--branco);
-            border: 1px solid var(--azul-escuro);
-            border-radius: 50%;
-            width: 38px; /* Tamanho aumentado */
-            height: 38px;
-            font-size: 0.85em; /* Tamanho da fonte ajustado */
-            font-weight: bold;
+        .btn-open {
+            background-color: #ff69b4;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
-            flex-shrink: 0; /* Impede que os botões encolham */
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 100%;
+            font-size: 1rem;
+        }
+        .btn-open:hover {
+            background-color: #e0529d;
+            transform: translateY(-2px);
+        }
+        .btn-open:active {
+            transform: translateY(0px);
         }
 
-        .bottom-nav button:hover {
-            background-color: var(--azul-vibrante);
-            transform: translateY(-2px); /* Leve elevação no hover */
+        .message-container {
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.7) translateY(20px);
+            transition: opacity 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: absolute; /* Centraliza após o cofre sumir */
+            width: 90%;
+            max-width: 500px;
+            z-index: 5; /* Abaixo do cofre inicialmente */
+        }
+        .message-container.visible {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        .love-message {
+            font-family: 'Pacifico', cursive;
+            font-size: 2.5rem;
+            color: #fff;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            margin-bottom: 2rem;
+            line-height: 1.3;
+        }
+        .heart {
+            position: absolute;
+            bottom: -60px;
+            font-size: 1.2rem; /* Tamanho base */
+            color: #ff1493;
+            animation: floatUp 4s linear forwards; /* Duração base */
+            user-select: none;
+            pointer-events: none;
+            opacity: 0; /* Começa invisível para fade in */
         }
 
-        .bottom-nav button.atual {
-            background-color: var(--azul-vibrante);
-            transform: scale(1.15); /* Destaque maior */
-            border: 2px solid var(--branco); /* Borda mais destacada */
-            box-shadow: 0 0 5px rgba(255,255,255,0.5);
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.7) rotate(0deg);
+                opacity: 0.7;
+            }
+            20% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-110vh) scale(1.3) rotate(20deg); /* Sobe mais e escala mais */
+                opacity: 0;
+            }
         }
 
-        .bottom-nav button.certo {
-            background-color: var(--verde-certo);
-            border-color: var(--verde-certo);
-            color: var(--branco);
-        }
-        .bottom-nav button.certo:hover {
-             background-color: #3e8e41; /* Verde um pouco mais escuro no hover */
+        .error-message {
+            color: #e53e3e;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            height: 1.25rem;
         }
 
-
-        .bottom-nav button.errado {
-            background-color: var(--vermelho-errado);
-            border-color: var(--vermelho-errado);
-            color: var(--branco);
+        @media (min-width: 640px) {
+            .vault-container {
+                padding: 2.5rem 2rem;
+            }
+            .vault-svg-container {
+                width: 180px;
+                height: 180px;
+            }
+            .romantic-title {
+                font-size: 2.25rem;
+            }
+            input[type="password"] {
+                font-size: 1.25rem;
+            }
+            .btn-open {
+                font-size: 1.125rem;
+            }
+            .love-message {
+                font-size: 3.5rem;
+            }
+            .heart {
+                font-size: 1.5rem; /* Tamanho base maior */
+            }
         }
-        .bottom-nav button.errado:hover {
-            background-color: #c4302b; /* Vermelho um pouco mais escuro no hover */
+        /* Animação de shake para erro */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
+            20%, 40%, 60%, 80% { transform: translateX(6px); }
+        }
+        .animate-shake {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
         }
 
+        /* Keyframes for dial wobble */
+        @keyframes dialWobble {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            50% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        /* Apply dial wobble animation when input is focused */
+        .vault-svg-container.dial-animating .dial-plate,
+        .vault-svg-container.dial-animating #vaultDialMarker {
+            animation: dialWobble 0.7s ease-in-out infinite;
+            transform-origin: 100px 100px; /* SVG coordinates for dial center */
+        }
+
+        /* Keyframes for enhanced handle turn */
+        @keyframes handleTurnAndClick {
+            0% { transform: rotate(0deg) scale(1); }
+            70% { transform: rotate(145deg) scale(1.1); } /* Overshoot rotation slightly and scale up */
+            90% { transform: rotate(130deg) scale(1.05); } /* Bounce back rotation */
+            100% { transform: rotate(135deg) scale(1); } /* Settle to final rotation */
+        }
+
+        /* Keyframes for message pulsing/glowing effect */
+        @keyframes pulseGlow {
+            0% { text-shadow: 2px 2px 8px rgba(0,0,0,0.5), 0 0 10px rgba(255, 182, 193, 0.5); } /* LightPink base glow */
+            50% { text-shadow: 2px 2px 12px rgba(0,0,0,0.6), 0 0 25px rgba(255, 182, 193, 1); } /* Brighter LightPink glow */
+            100% { text-shadow: 2px 2px 8px rgba(0,0,0,0.5), 0 0 10px rgba(255, 182, 193, 0.5); }
+        }
+
+        .love-message.message-pulsing {
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        .confetti-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000; /* Ensure confetti is on top */
+        }
     </style>
 </head>
 <body>
-    <div class="animated-gradient-background"></div>
-    <div class="site-content"> <!-- Wrapper para conteúdo do site -->
-        <header>
-            <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
-            </svg>
-            <h1>Quiz Interativo</h1>
-        </header>
-        <main>
-            <div id="quiz-container">
-                <div class="card">
-                    <p class="pergunta">Qual é a cor do céu em um dia ensolarado, devido principalmente ao fenômeno de dispersão de Rayleigh?</p>
-                    <div class="opcoes">
-                        <button data-correta="true">Azul</button>
-                        <button>Branco</button>
-                        <button>Amarelo</button>
-                        <button>Verde</button>
-                    </div>
-                    <div class="question-actions">
-                         <button id="pular-questao">Pular Questão</button>
-                    </div>
-                    <p id="feedback"></p>
-                    <button class="accordion">Ver Justificativa</button>
-                    <div class="panel">
-                        <p>A cor do céu é azul devido à dispersão de Rayleigh da luz solar pelas moléculas do ar. Essa dispersão afeta mais fortemente os comprimentos de onda mais curtos (azul e violeta).</p>
-                    </div>
+    <div id="appContainer" class="app-container">
+        <div class="vault-wrapper">
+            <div id="vaultContainer" class="vault-container">
+                <div class="vault-svg-container">
+                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="20" y="20" width="160" height="160" rx="10" class="vault-body"/>
+                        <rect id="vaultDoorSvg" x="25" y="25" width="150" height="150" rx="5" class="vault-door"/>
+                        <rect x="18" y="40" width="10" height="20" rx="2" class="hinge"/>
+                        <rect x="18" y="140" width="10" height="20" rx="2" class="hinge"/>
+                        <circle cx="100" cy="100" r="35" class="dial-plate"/>
+                        <circle cx="100" cy="100" r="15" class="dial-center"/>
+                        <line id="vaultDialMarker" x1="100" y1="70" x2="100" y2="80" stroke="#606060" stroke-width="3"/>
+                        <rect x="95" y="90" width="10" height="30" rx="2" class="handle-base" transform="translate(50, 15)"/> <rect id="handleGripSvg" x="85" y="115" width="30" height="10" rx="3" class="handle-grip" transform="translate(50, 15)"/> </svg>
                 </div>
+                <h1 class="romantic-title">Um Segredo Para Você</h1>
+                <input type="password" id="passwordInput" placeholder="Digite a senha especial">
+                <div id="errorMessage" class="error-message"></div>
+                <button id="openVaultButton" class="btn-open">Abrir o Cofre</button>
             </div>
-            <div id="pontuacao-final" style="display: none;">
-                <div class="card">
-                    <h2>Pontuação Final: <span id="pontos">0</span></h2>
-                </div>
-            </div>
-            <div class="navigation-buttons" style="display: none;"> <!-- Era #reiniciar-container -->
-                <button id="anterior-questao" class="secondary-action">Anterior</button>
-                <button id="proxima-questao">Próxima</button>
-                <button id="reiniciar-quiz">Reiniciar Quiz</button>
-            </div>
-        </main>
-    </div>
-    <footer>
-        <svg class="footer-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-        </svg>
-        <span>Encontre mais quizzes e aprenda!</span>
-        <button id="limpar-progresso-btn" style="margin-left: 20px; padding: 8px 12px; border: 1px solid var(--azul-escuro); background-color: var(--branco); color: var(--azul-escuro); border-radius: 5px; cursor: pointer;">Limpar Progresso</button>
-    </footer>
-    <div class="bottom-nav">
-        <!-- Botões das questões serão inseridos aqui pelo JS -->
+        </div>
+
+        <div id="messageContainer" class="message-container">
+            <h2 id="loveMessageText" class="love-message">Eu te amo infinitamente!</h2>
+        </div>
     </div>
 
     <script>
-        const containerQuiz = document.getElementById('quiz-container');
-        const elementoPergunta = document.querySelector('.pergunta');
-        const containerOpcoes = document.querySelector('.opcoes');
-        const elementoFeedback = document.getElementById('feedback');
-        const btnPularQuestao = document.getElementById('pular-questao');
+        const passwordInput = document.getElementById('passwordInput');
+        const openVaultButton = document.getElementById('openVaultButton');
+        const vaultContainer = document.getElementById('vaultContainer');
+        const messageContainer = document.getElementById('messageContainer');
+        const loveMessageText = document.getElementById('loveMessageText');
+        const errorMessage = document.getElementById('errorMessage');
+        const vaultDoorSvg = document.getElementById('vaultDoorSvg');
+        const handleGripSvg = document.getElementById('handleGripSvg'); // Para animar a maçaneta
+        const vaultSvgContainer = document.querySelector('.vault-svg-container'); // For dial animation
+        const correctPassword = "280921";
 
-        const btnAccordion = document.querySelector('.accordion');
-        const painelAccordion = document.querySelector('.panel');
+        const confettiColors = ['#ffd700', '#c0c0c0', '#ff69b4', '#87ceeb', '#9370db', '#f4a460'];
 
-        const containerPontuacaoFinal = document.getElementById('pontuacao-final');
-        const elementoPontos = document.getElementById('pontos');
+        function createConfettiParticle() {
+            const particle = document.createElement('div');
+            particle.classList.add('confetti-particle');
+            
+            particle.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+            const size = Math.random() * 7 + 8; // width/height between 8px and 15px
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
 
-        const containerNavegacao = document.querySelector('.navigation-buttons');
-        const btnAnterior = document.getElementById('anterior-questao');
-        const btnProxima = document.getElementById('proxima-questao');
-        const btnReiniciar = document.getElementById('reiniciar-quiz');
-        const btnLimparProgresso = document.getElementById('limpar-progresso-btn');
+            const messageRect = messageContainer.getBoundingClientRect();
+            // Start confetti from roughly the center of where the vault was, or top of message area
+            particle.style.left = (messageRect.left + messageRect.width / 2) + 'px'; 
+            particle.style.top = (messageRect.top + messageRect.height / 3) + 'px';
 
-        const CHAVE_PROCESSO = 'quizProgressoV2'; // V2 para evitar conflito com versões antigas sem validação de tamanho
 
-        const questoes = [
-            {
-                pergunta: "Qual é a cor do céu em um dia ensolarado, devido principalmente ao fenômeno de dispersão de Rayleigh?",
-                opcoes: ["Azul", "Branco", "Amarelo", "Verde"],
-                correta: 0,
-                justificativas: [ // Array de strings
-                    "A dispersão de Rayleigh espalha a luz azul (comprimento de onda menor) mais eficientemente do que outras cores.",
-                    "Embora a luz solar seja branca, a atmosfera dispersa seletivamente suas cores.",
-                    "O céu pode parecer amarelado/alaranjado durante o nascer/pôr do sol devido à maior travessia da luz pela atmosfera, mas não em pleno dia.",
-                    "O verde não é a cor predominante da dispersão da luz solar no céu diurno."
-                ]
-            },
-            {
-                pergunta: "Qual planeta é conhecido como o 'Planeta Vermelho'?",
-                opcoes: ["Júpiter", "Marte", "Vênus", "Saturno"],
-                correta: 1,
-                justificativas: [
-                    "Júpiter é um gigante gasoso com faixas de nuvens em tons de marrom, amarelo e branco.",
-                    "Marte é chamado de Planeta Vermelho devido à grande quantidade de óxido de ferro (ferrugem) em sua superfície.",
-                    "Vênus é coberto por nuvens densas de ácido sulfúrico, dando-lhe uma aparência amarelada.",
-                    "Saturno é conhecido por seus anéis e tem uma cor predominantemente amarelada pálida."
-                ]
-            },
-            {
-                pergunta: "Qual é o maior oceano da Terra?",
-                opcoes: ["Atlântico", "Índico", "Ártico", "Pacífico"],
-                correta: 3,
-                justificativas: [
-                    "O Oceano Atlântico é o segundo maior oceano.",
-                    "O Oceano Índico é o terceiro maior.",
-                    "O Oceano Ártico é o menor e mais raso dos oceanos principais.",
-                    "O Oceano Pacífico é o maior, cobrindo mais área do que todas as massas de terra combinadas."
-                ]
-            }
-        ];
+            document.body.appendChild(particle);
 
-        let indiceAtual;
-        let statusQuestoes; // true para correta, false para errada, null para não respondida
-        let respostasUsuario; // índice da resposta do usuário
+            const angle = Math.random() * Math.PI * 2; // Random angle in radians
+            const blastRadius = Math.random() * 150 + 80; // How far it shoots initially: 80 to 230px
+            // Initial burst movement, predominantly upwards and outwards
+            const initialX = Math.cos(angle) * blastRadius;
+            const initialY = Math.sin(angle) * blastRadius - (blastRadius * 0.5); // Bias upwards
 
-        function inicializarVariaveisQuiz() {
-            indiceAtual = 0;
-            statusQuestoes = Array(questoes.length).fill(null);
-            respostasUsuario = Array(questoes.length).fill(null);
+            const particleAnimationName = `confetti-particle-anim-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+            const fallToY = '110vh'; // Fall off screen
+            const finalRotation = Math.random() * 720 - 360; // Random end rotation
+            const swayX = Math.random() * 200 - 100; // Horizontal sway during fall
+
+            const keyframes = `
+            @keyframes ${particleAnimationName} {
+                0% {
+                    transform: translate(0px, 0px) rotateZ(0deg) scale(1);
+                    opacity: 1;
+                }
+                20% { /* Initial burst movement */
+                    transform: translate(${initialX}px, ${initialY}px) rotateZ(${finalRotation * 0.2}deg) scale(0.8);
+                    opacity: 1;
+                }
+                100% {
+                    transform: translate(${initialX + swayX}px, ${fallToY}) rotateZ(${finalRotation}deg) scale(0.3);
+                    opacity: 0;
+                }
+            }`;
+            const styleSheet = document.createElement("style");
+            styleSheet.type = "text/css";
+            styleSheet.innerText = keyframes;
+            document.head.appendChild(styleSheet);
+
+            particle.style.animation = `${particleAnimationName} ${Math.random() * 2 + 2.5}s linear forwards`; // Duration 2.5-4.5s
+
+            particle.addEventListener('animationend', () => {
+                particle.remove();
+                styleSheet.remove();
+            });
         }
 
-        function salvarProgresso() {
-            const progresso = {
-                indiceAtual,
-                statusQuestoes,
-                respostasUsuario
-            };
-            localStorage.setItem(CHAVE_PROCESSO, JSON.stringify(progresso));
+
+        function createHeart() {
+            const heartEmojis = ['❤️', '💖', '💕', '💓', '💗'];
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerHTML = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+
+            heart.style.left = Math.random() * 100 + 'vw';
+            const randomScale = Math.random() * 0.8 + 0.8; // entre 0.8 e 1.6
+            // heart.style.transform = `scale(${randomScale})`; // Initial scale is set in keyframes 0%
+            heart.style.animationDuration = (Math.random() * 3 + 3.5) + 's'; // entre 3.5s e 6.5s
+            heart.style.animationDelay = (Math.random() * 0.5) + 's'; // Pequeno delay para não começarem todos juntos
+            
+            const targetTranslateY = -(100 + Math.random() * 20); // e.g., -100vh to -120vh
+            const targetRotation = Math.random() * 90 - 45;    // -45deg to +45deg
+            const targetTranslateX = Math.random() * 150 - 75;   // -75px to +75px
+            const finalScaleFactor = 1.3 + Math.random() * 0.4; // between 1.3 and 1.7
+
+            // Adiciona uma leve oscilação horizontal na animação
+            const keyframes = `
+                @keyframes floatUp-${Date.now()}-${Math.random()} {
+                    0% {
+                        transform: translateY(0) scale(${randomScale * 0.7}) rotate(0deg) translateX(0px);
+                        opacity: 0;
+                    }
+                    20% {
+                        opacity: ${Math.random() * 0.3 + 0.7}; /* Opacidade entre 0.7 e 1.0 */
+                    }
+                    100% {
+                        transform: translateY(${targetTranslateY}vh) scale(${randomScale * finalScaleFactor}) rotate(${targetRotation}deg) translateX(${targetTranslateX}px);
+                        opacity: 0;
+                    }
+                }
+            `;
+            const styleSheet = document.createElement("style");
+            styleSheet.type = "text/css";
+            styleSheet.innerText = keyframes;
+            document.head.appendChild(styleSheet);
+            heart.style.animationName = `floatUp-${Date.now()}-${Math.random()}`;
+
+
+            document.body.appendChild(heart);
+
+            heart.addEventListener('animationend', () => {
+                heart.remove();
+                styleSheet.remove(); // Limpa a keyframe da folha de estilo
+            });
         }
 
-        function carregarProgresso() {
-            const progressoSalvo = localStorage.getItem(CHAVE_PROCESSO);
-            if (progressoSalvo) {
-                try {
-                    const dados = JSON.parse(progressoSalvo);
-                    if (dados.statusQuestoes && dados.statusQuestoes.length === questoes.length &&
-                        dados.respostasUsuario && dados.respostasUsuario.length === questoes.length &&
-                        typeof dados.indiceAtual === 'number') {
+        openVaultButton.addEventListener('click', () => {
+            if (passwordInput.value === correctPassword) {
+                errorMessage.textContent = '';
+                vaultContainer.classList.add('opening'); // Adiciona classe para animar a maçaneta
+                vaultDoorSvg.classList.add('open'); // Abre a porta do SVG
 
-                        indiceAtual = dados.indiceAtual;
-                        statusQuestoes = dados.statusQuestoes;
-                        respostasUsuario = dados.respostasUsuario;
-                        console.log('Progresso carregado:', {indiceAtual, statusQuestoes, respostasUsuario});
+                // Atraso para a animação da porta acontecer antes do cofre sumir
+                setTimeout(() => {
+                    vaultContainer.style.transform = 'scale(0.7) rotateY(30deg)'; // Efeito de sumiço mais interessante
+                    vaultContainer.style.opacity = '0';
 
-                        // Se todas as questões já foram respondidas ao carregar, mostrar desempenho
-                        if (statusQuestoes.every(s => s !== null) && indiceAtual >= questoes.length -1) {
-                             // Ajuste para permitir ir para a tela de desempenho mesmo se indiceAtual for o último
-                            if (statusQuestoes[indiceAtual] !== null || indiceAtual === questoes.length) {
-                                mostrarTelaDesempenho();
-                                return true; // Indica que a tela de desempenho foi mostrada
+                    setTimeout(() => {
+                        vaultContainer.style.display = 'none';
+                        messageContainer.classList.add('visible');
+                        
+                        const fullMessage = "Eu te amo infinitamente!";
+                        loveMessageText.textContent = ''; // Clear current text for typing animation
+                        let i = 0;
+                        function typeCharacter() {
+                            if (i < fullMessage.length) {
+                                loveMessageText.textContent += fullMessage.charAt(i);
+                                i++;
+                                setTimeout(typeCharacter, 120); // Adjust typing speed (ms)
+                            } else {
+                                // Typing finished, add the pulsing effect class
+                                loveMessageText.classList.add('message-pulsing');
                             }
                         }
-                        return false; // Indica que o quiz normal deve continuar
-                    } else {
-                        console.warn('Progresso salvo é de uma versão diferente do quiz ou está corrompido. Resetando.');
-                        localStorage.removeItem(CHAVE_PROCESSO);
-                        inicializarVariaveisQuiz();
-                    }
-                } catch (error) {
-                    console.error('Erro ao parsear progresso salvo:', error);
-                    localStorage.removeItem(CHAVE_PROCESSO);
-                    inicializarVariaveisQuiz();
-                }
-            } else {
-                inicializarVariaveisQuiz();
-            }
-            return false; // Nenhuma tela de desempenho mostrada
-        }
-
-        function limparProgressoEresetarQuiz() {
-            if (confirm("Tem certeza que deseja limpar todo o progresso e recomeçar o quiz?")) {
-                localStorage.removeItem(CHAVE_PROCESSO);
-                inicializarVariaveisQuiz();
-                painelAccordion.style.maxHeight = null; // Fecha o acordeão
-                btnAccordion.classList.remove('active');
-                containerQuiz.style.display = 'block';
-                containerPontuacaoFinal.style.display = 'none';
-                containerNavegacao.style.display = 'flex';
-                renderizarQuestao(indiceAtual);
-                renderizarNavInferior(); // Para botões Próxima/Anterior
-                renderizarBarraNavegacaoQuestoes(); // Para a nova barra de questões
-                alert('Progresso limpo e quiz reiniciado!');
-            }
-        }
-
-        function renderizarQuestao(indice) {
-            if (indice < 0 || indice >= questoes.length) return;
-
-            const questaoAtual = questoes[indice];
-            const card = containerQuiz.querySelector('.card');
-
-            // Reset de animação do card
-            card.style.animation = 'none';
-            void card.offsetWidth; // Trigger reflow
-            card.style.animation = 'fadeInSlideUp 0.5s ease-out forwards';
-
-            elementoPergunta.textContent = `(${indice + 1}/${questoes.length}) ${questaoAtual.pergunta}`;
-            containerOpcoes.innerHTML = '';
-            elementoFeedback.textContent = '';
-            elementoFeedback.className = '';
-
-            // Limpa justificativas anteriores e prepara o container
-            let containerJustificativas = painelAccordion.querySelector('.justificativa-content');
-            if (!containerJustificativas) {
-                painelAccordion.innerHTML = ''; // Limpa o <p> antigo se existir
-                containerJustificativas = document.createElement('div');
-                containerJustificativas.className = 'justificativa-content';
-                painelAccordion.appendChild(containerJustificativas);
-            }
-            containerJustificativas.innerHTML = ''; // Limpa para novos itens
-
-            painelAccordion.style.maxHeight = null;
-            btnAccordion.classList.remove('active');
-            btnAccordion.style.display = 'none'; // Esconde por padrão
-
-            const respondida = statusQuestoes[indice] !== null;
-
-            questaoAtual.opcoes.forEach((opcao, i) => {
-                const botao = document.createElement('button');
-                botao.textContent = opcao;
-                botao.disabled = respondida;
-                botao.addEventListener('click', () => validarResposta(i));
-
-                if (respondida) {
-                    if (i === respostasUsuario[indice]) { // Resposta do usuário
-                        botao.classList.add(statusQuestoes[indice] ? 'correto' : 'errado');
-                        // Aplicar estilo direto para fundo, pois classes .correto/.errado são para texto no feedback
-                        botao.style.backgroundImage = 'none';
-                        botao.style.backgroundColor = statusQuestoes[indice] ? 'var(--verde-certo)' : 'var(--vermelho-errado)';
-                        botao.style.color = 'var(--branco)';
-                    }
-                    if (i === questaoAtual.correta && !statusQuestoes[indice]) { // Se errou, destaca a correta
-                         setTimeout(() => { // Pequeno delay para o usuário ver a sua e depois a correta
-                            const btnCorreta = containerOpcoes.children[questaoAtual.correta];
-                            if (btnCorreta && i !== respostasUsuario[indice]) { // Não re-estilizar se for a que o usuário clicou
-                                btnCorreta.style.backgroundImage = 'none';
-                                btnCorreta.style.backgroundColor = 'var(--verde-certo)';
-                                btnCorreta.style.color = 'var(--branco)';
-                                btnCorreta.style.opacity = '0.8'; // Leve destaque
-                            }
-                        }, 500);
-                    }
-                }
-                containerOpcoes.appendChild(botao);
-            });
-
-            if (respondida) {
-                btnAccordion.style.display = 'block'; // Mostra botão de justificativa
-                elementoFeedback.textContent = statusQuestoes[indice] ? "Correto!" : "Errado!";
-                elementoFeedback.classList.add(statusQuestoes[indice] ? "correto" : "errado");
-
-                // Preenche as justificativas
-                const containerJustificativasInterno = painelAccordion.querySelector('.justificativa-content');
-                questaoAtual.opcoes.forEach((opcaoTexto, i) => {
-                    const letraOpcao = String.fromCharCode(65 + i); // A, B, C, D...
-                    const textoJustificativa = questaoAtual.justificativas[i] || "Justificativa não disponível.";
-
-                    const pJustificativa = document.createElement('p');
-                    pJustificativa.classList.add('justificativa-item');
-                    pJustificativa.innerHTML = `<strong>${letraOpcao}:</strong> ${textoJustificativa}`;
-
-                    if (i === questaoAtual.correta) {
-                        pJustificativa.classList.add('certa');
-                    } else {
-                        pJustificativa.classList.add('errada');
-                    }
-                    containerJustificativasInterno.appendChild(pJustificativa);
-                });
-
-            }
-
-            btnPularQuestao.style.display = respondida ? 'none' : 'block';
-            btnPularQuestao.disabled = respondida;
-        }
-
-        function validarResposta(indiceOpcaoSelecionada) {
-            if (statusQuestoes[indiceAtual] !== null) return; // Já respondida
-
-            const questaoAtual = questoes[indiceAtual];
-            respostasUsuario[indiceAtual] = indiceOpcaoSelecionada;
-            const acertou = indiceOpcaoSelecionada === questaoAtual.correta;
-            statusQuestoes[indiceAtual] = acertou;
-
-            renderizarQuestao(indiceAtual); // Re-renderiza para mostrar feedback e desabilitar
-            renderizarNavInferior();
-            renderizarBarraNavegacaoQuestoes(); // Atualiza status na barra
-            salvarProgresso(); // Salva o progresso
-
-            // Verifica se todas as questões foram respondidas
-            if (statusQuestoes.every(s => s !== null)) {
-                // Aguarda um pouco para o usuário ver o feedback da última questão
-                setTimeout(mostrarTelaDesempenho, 1500);
-            }
-        }
-
-        function pularQuestao() {
-            if (indiceAtual < questoes.length - 1) {
-                indiceAtual++;
-                renderizarQuestao(indiceAtual);
-                renderizarNavInferior();
-                renderizarBarraNavegacaoQuestoes();
-                salvarProgresso(); // Salva ao pular também
-            } else if (statusQuestoes.every(s => s !== null)) {
-                 mostrarTelaDesempenho();
-            } else {
-                // Se for a última questão e não foi respondida, não faz nada ou avisa
-            }
-        }
-
-        function mostrarTelaDesempenho() {
-            containerQuiz.style.display = 'none';
-            containerNavegacao.style.display = 'none'; // Esconde botões de navegação
-            btnPularQuestao.style.display = 'none';
-
-            const acertos = statusQuestoes.filter(s => s === true).length;
-            elementoPontos.textContent = `${acertos} de ${questoes.length}`;
-            containerPontuacaoFinal.style.display = 'block';
-
-            // Card da pontuação final também deve ter animação
-            const cardPontuacao = containerPontuacaoFinal.querySelector('.card');
-            cardPontuacao.style.animation = 'none';
-            void cardPontuacao.offsetWidth; // Trigger reflow
-            cardPontuacao.style.animation = 'fadeInSlideUp 0.5s ease-out forwards';
-
-            // Reiniciar quiz é o único botão visível aqui
-            const btnReiniciarQuizDesempenho = document.createElement('button');
-            btnReiniciarQuizDesempenho.textContent = "Reiniciar Quiz";
-            btnReiniciarQuizDesempenho.addEventListener('click', limparProgressoEresetarQuiz); // Usa a função de limpar
-             // Remove botões antigos se houver
-            const oldBtn = containerPontuacaoFinal.querySelector('button');
-            if(oldBtn) oldBtn.remove();
-            containerPontuacaoFinal.querySelector('.card').appendChild(btnReiniciarQuizDesempenho);
-        }
-
-        function renderizarNavInferior() {
-            containerNavegacao.style.display = 'flex';
-
-            btnAnterior.disabled = indiceAtual === 0;
-
-            // Se todas respondidas ou se a atual não foi respondida E não é a última
-            const proximaBloqueada = statusQuestoes[indiceAtual] === null && indiceAtual < questoes.length -1;
-            // Ou se é a última questão e ainda não foi respondida
-            const ultimaNaoRespondida = indiceAtual === questoes.length -1 && statusQuestoes[indiceAtual] === null;
-
-            btnProxima.disabled = proximaBloqueada || ultimaNaoRespondida || indiceAtual === questoes.length -1 && statusQuestoes[indiceAtual] !== null;
-
-            if (statusQuestoes.every(s => s !== null)) {
-                btnProxima.textContent = "Ver Desempenho";
-                btnProxima.disabled = false; // Habilita para ir para desempenho
-            } else {
-                btnProxima.textContent = "Próxima";
-            }
-        }
-
-        function navegarProxima() {
-            if (statusQuestoes.every(s => s !== null)) {
-                mostrarTelaDesempenho();
-            } else if (indiceAtual < questoes.length - 1) {
-                indiceAtual++;
-                renderizarQuestao(indiceAtual);
-                renderizarNavInferior();
-                renderizarBarraNavegacaoQuestoes();
-                salvarProgresso(); // Salva ao navegar
-            }
-        }
-
-        function navegarAnterior() {
-            if (indiceAtual > 0) {
-                indiceAtual--;
-                renderizarQuestao(indiceAtual);
-                renderizarNavInferior();
-                renderizarBarraNavegacaoQuestoes();
-                salvarProgresso(); // Salva ao navegar
-            }
-        }
-
-        function renderizarBarraNavegacaoQuestoes() {
-            const navContainer = document.querySelector('.bottom-nav');
-            navContainer.innerHTML = ''; // Limpa botões antigos
-
-            questoes.forEach((_, i) => {
-                const btnQuestao = document.createElement('button');
-                btnQuestao.textContent = `${i + 1}`;
-                // btnQuestao.title = `Ir para Questão ${i + 1}`; // Tooltip
-
-                if (i === indiceAtual) {
-                    btnQuestao.classList.add('atual');
-                }
-                if (statusQuestoes[i] === true) {
-                    btnQuestao.classList.add('certo');
-                } else if (statusQuestoes[i] === false) {
-                    btnQuestao.classList.add('errado');
+                        typeCharacter(); // Start typing animation
+                
+                const numConfetti = 80; // Number of confetti particles
+                for (let i = 0; i < numConfetti; i++) {
+                    setTimeout(createConfettiParticle, i * 25); // Stagger their creation
                 }
 
-                btnQuestao.addEventListener('click', () => {
-                    indiceAtual = i;
-                    renderizarQuestao(indiceAtual);
-                    renderizarNavInferior(); // Atualiza botões Próxima/Anterior
-                    renderizarBarraNavegacaoQuestoes(); // Atualiza a própria barra
-                    salvarProgresso();
-                });
-                navContainer.appendChild(btnQuestao);
-            });
-        }
+                        for(let i=0; i<15; i++) { setTimeout(createHeart, i * 100); } // Cria corações iniciais com um pequeno stagger
+                        const heartInterval = setInterval(createHeart, 250); // Cria novos corações
 
+                        // Opcional: parar de criar corações depois de um tempo
+                        // setTimeout(() => clearInterval(heartInterval), 20000); // Para após 20 segundos
+                    }, 700); // Tempo para o cofre sumir após a porta abrir
 
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            const desempenhoMostrado = carregarProgresso(); // Carrega o progresso
-            if (!desempenhoMostrado) { // Se o carregamento não resultou na tela de desempenho
-                renderizarQuestao(indiceAtual);
-                renderizarNavInferior();
-            }
-            renderizarBarraNavegacaoQuestoes(); // Renderiza a barra de questões
-        });
+                }, 600); // Tempo para a porta do SVG abrir
 
-        btnAnterior.addEventListener('click', navegarAnterior);
-        btnProxima.addEventListener('click', navegarProxima);
-        btnReiniciar.addEventListener('click', limparProgressoEresetarQuiz); // Botão de reiniciar principal também limpa
-        btnPularQuestao.addEventListener('click', pularQuestao);
-        btnLimparProgresso.addEventListener('click', limparProgressoEresetarQuiz);
-
-        btnAccordion.addEventListener('click', () => {
-            btnAccordion.classList.toggle('active');
-            if (painelAccordion.style.maxHeight) {
-                painelAccordion.style.maxHeight = null;
             } else {
-                painelAccordion.style.maxHeight = painelAccordion.scrollHeight + "px";
+                errorMessage.textContent = 'Senha incorreta, tente novamente!';
+                passwordInput.classList.add('animate-shake');
+                setTimeout(() => {
+                    passwordInput.classList.remove('animate-shake');
+                }, 400);
+                passwordInput.value = '';
+                passwordInput.focus();
             }
         });
 
+        passwordInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                openVaultButton.click();
+            }
+        });
+
+        // Dial animation on input focus/blur
+        passwordInput.addEventListener('focus', () => {
+            vaultSvgContainer.classList.add('dial-animating');
+        });
+        passwordInput.addEventListener('blur', () => {
+            vaultSvgContainer.classList.remove('dial-animating');
+        });
     </script>
 </body>
 </html>
